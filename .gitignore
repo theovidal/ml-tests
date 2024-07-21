@@ -1,0 +1,10 @@
+aclImdb
+*.csv
+*.tar.gz
+
+logs
+
+__pycache__
+
+.idea
+.vscode
