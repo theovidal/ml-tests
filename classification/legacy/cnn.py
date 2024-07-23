@@ -33,6 +33,8 @@ def init_cnn_model(
     x = tf.keras.layers.Embedding(
         num_features,
         model_params["embedding_dim"],
+        mask_zero=True,  # This option serves to ignore zeros in the padding (after having extended sequences to match
+                         # length) when passing to convolution blocks, or more efficiently to RNN blocks
     )(inputs)
 
     for i in range(model_params["num_blocks"]):

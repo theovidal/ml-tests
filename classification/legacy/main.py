@@ -59,7 +59,7 @@ def execute_cnn(train_texts, train_labels, test_texts, test_labels, classes_list
 
 def main():
     train_texts, train_labels, train_classes, test_texts, test_labels, test_classes = (
-        load_imdb_sentiment_analysis_dataset('aclImdb', int(time.time())))
+        load_imdb_sentiment_analysis_dataset('../aclImdb', int(time.time())))
     nb_samples, classes_list, word_counts, avg_nb_words = analyse_dataset(train_texts, train_labels, train_classes)
 
     while True:
