@@ -1,4 +1,5 @@
 import datetime
+
 import tensorflow as tf
 
 
@@ -35,16 +36,8 @@ def fit_model_tensorboard(model,
     else:
         kwargs['validation_split'] = validation_split
 
-    history = model.fit(
-        train_features,
+    return model.fit(
+        train_features.toarray(),
         train_labels,
         **kwargs
     )
-
-    # Print results: interesting data (loss and accuracy) are taken from the last training
-    history = history.history
-    print(f"Validation accuracy: {history['val_acc'][-1]}, loss: {history['val_loss'][-1]}")
-
-    # Save model
-    model.save(f'{name}.h5')
-    return history['val_acc'][-1], history['val_loss'][-1]
