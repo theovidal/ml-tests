@@ -1,4 +1,4 @@
-aclImdb
+classification/aclImdb
 *.csv
 *.tar.gz
 
