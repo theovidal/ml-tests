@@ -13,13 +13,17 @@ def get_units_and_activation(num_classes):
         return 1, 'sigmoid'
 
 
-def compile_classification_model(model, num_classes, learning_rate=1e-3, early_stopping=2):
+def compile_classification_model(
+        model,
+        num_classes,
+        learning_rate=1e-3,
+        early_stopping=2):
     # We are in a classification problem, so we might use other losses (because our probabilities are either solids 1 or
     # 0 in our dataset)
     # If we only have two classes, our probability is straightforward : in or out => binary
-    loss = 'binary_crossentropy'
+    loss = tf.keras.losses.BinaryCrossentropy()
     if num_classes > 2:
-        loss = 'sparse_categorical_crossentropy'
+        loss = tf.keras.losses.SparseCategoricalCrossentropy()
     optimizer = tf.keras.optimizers.Adam(learning_rate)
 
     # Classification problem: we use accuracy as our metric
@@ -28,14 +32,15 @@ def compile_classification_model(model, num_classes, learning_rate=1e-3, early_s
     callbacks = []
     if early_stopping is not None:
         # Stop the training early if the validation loss doesn't decrease in 2 consecutive steps
-        callbacks.append(tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2))
+        callbacks.append(tf.keras.callbacks.EarlyStopping(monitor='loss', patience=early_stopping))
 
     return callbacks
 
 
 def fit_model_tensorboard(model,
-                          train_features,
-                          train_labels,
+                          dataset=None,
+                          features=None,
+                          labels=None,
                           name='model',
                           verbose=0,
                           epochs=100,
@@ -58,14 +63,27 @@ def fit_model_tensorboard(model,
 
         # Compute the error using batch_size samples
         'batch_size': batch_size,
-        'callbacks': callbacks,
-        'validation_split': validation_split,
+        'callbacks': callbacks
     }
 
-    model.fit(
-        tf.Variable(train_features),
-        train_labels,
-        **kwargs
-    )
+    if dataset is None:
+        kwargs['validation_split'] = validation_split
+        model.fit(
+            tf.Variable(features),
+            labels,
+            **kwargs
+        )
+    else:
+        dataset_size = sum(1 for _ in dataset)
+        dataset = dataset.shuffle(buffer_size=1000)
+        validation_size = int(validation_split * dataset_size)
+
+        validation_dataset = dataset.take(validation_size)
+        train_dataset = dataset.skip(validation_size)
+        kwargs['validation_data'] = validation_dataset
+        model.fit(train_dataset, **kwargs)
+
     # Save model
     model.save(f'models/{name}.keras')
+    tf.keras.utils.plot_model(model, show_shapes=True)
+    print(f'Saved model to models/{name}.keras')

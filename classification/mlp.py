@@ -35,13 +35,5 @@ def mlp_model(num_classes,
 
     callbacks = utils.compile_classification_model(model, num_classes, learning_rate)
 
-    utils.fit_model_tensorboard(
-        model,
-        # TODO: see if toarray is relevant here
-        train_features,
-        train_labels,
-        name='imdb_classification_mlp',
-        batch_size=512,
-        epochs=epochs,
-        callbacks=callbacks
-    )
+    utils.fit_model_tensorboard(model, features=train_features, labels=train_labels, name='imdb_classification_mlp',
+                                epochs=epochs, batch_size=512, callbacks=callbacks)

@@ -1,10 +1,11 @@
 # Based on https://developers.google.com/machine-learning/guides/text-classification
 import os.path
+import datetime
+import time
 
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import time
 
 from open_data import load_imdb_sentiment_analysis_dataset
 from analyse_data import analyse_dataset
@@ -12,6 +13,7 @@ from mlp import mlp_model
 from cnn import cnn_model, get_vectorize_layer
 from vectorize_sequences import get_vocabulary
 from vectorize_ngram import vectorize_ngrams
+from utils import compile_classification_model
 
 
 def execute_mlp(train_texts, train_labels, test_texts, test_labels, classes_list):
@@ -33,9 +35,22 @@ def execute_cnn(train_texts, train_labels, test_texts, test_labels, classes_list
         print("No saved model: training a new one")
         model = cnn_model(vocabulary, len(classes_list), train_texts, train_labels)
 
-    tf.keras.utils.plot_model(model, show_shapes=True)
-    x_test = vectorize_layer(test_texts)
-    loss = model.evaluate(x_test, test_labels)
+    # Making an end-to-end model that includes the preprocessing layer, which is more convenient for
+    # inference.
+    inputs = tf.keras.Input(shape=(1,), dtype="string")
+    x = vectorize_layer(inputs)
+    end_to_end_model = tf.keras.Model(inputs=inputs, outputs=model(x))
+
+    log_dir = "logs/evaluate/cnn-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    end_to_end_model.predict(tf.constant(test_texts[:1]))
+
+    # To evaluate our model, we must still use the other version, that was saved with the compilation information
+    # and so the metrics are built
+    x_train = vectorize_layer(test_texts)
+    loss = model.evaluate(tf.constant(x_train),
+                          test_labels,
+                          callbacks=[tensorboard_callback])
     print(f"Test loss: {loss}")
 
 
