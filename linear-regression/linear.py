@@ -46,7 +46,7 @@ def main():
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.1),
         loss='mean_absolute_error')
-    history = utils.fit_model_tensorboard(model, features=train_features, labels=train_labels, name='linear')
+    history = utils.fit_model_tensorboard(model, features=train_features, labels=train_labels)
 
     print("Test loss = ", model.evaluate(test_features, test_labels, verbose=0))
 

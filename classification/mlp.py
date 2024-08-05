@@ -33,7 +33,6 @@ def mlp_model(num_classes,
     # Hence the input shape of our model = the vocabulary size
     model = create_sequential(layers, 64, 'relu', num_classes, train_features.shape[1:], 0.2)
 
-    callbacks = utils.compile_classification_model(model, num_classes, learning_rate)
+    callbacks = utils.compile_classification_model(model, num_classes)
 
-    utils.fit_model_tensorboard(model, features=train_features, labels=train_labels, name='imdb_classification_mlp',
-                                epochs=epochs, batch_size=512, callbacks=callbacks)
+    utils.fit_model_tensorboard(model, features=train_features, labels=train_labels, callbacks=callbacks)
