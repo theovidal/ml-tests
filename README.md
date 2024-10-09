@@ -26,6 +26,8 @@ Using Numpy, Pandas and TensorFlow (with Keras):
 - Cleaning and visualizing structured data, text, images, timeseries
 - Explainability of a model
 
+I compiled all theoretical notions I learned on a [single Notion page](https://theovld.fr/l/apprentissage) (in French only for the moment).
+
 ## My projects around ML
 
 - [Beta project](https://github.com/theovidal/beta-project): using AI for rock climbing, for instance predicting route grades or generating new routes
