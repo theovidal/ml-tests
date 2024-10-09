@@ -1,10 +1,15 @@
-classification/aclImdb
+# Datasets
+*.zip
 *.csv
 *.tar.gz
+Resources
 
+# Debugging and logs
 logs
 
+# Cache
 __pycache__
 
+# IDE params
 .idea
 .vscode
